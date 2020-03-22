@@ -3,7 +3,6 @@ from threading import Thread
 from parser import Sender
 from models import session, Task
 
-
 with open('dict.txt', 'r') as f:
     wordlist = f.read()
 
@@ -34,12 +33,11 @@ else:
     session.commit()
     task_id = task.id
 
-
 if last_word != wordlist[0]:
     index = wordlist.index(last_word)
-    wordlist = wordlist[index:]
+    wordlist = wordlist[index + 1:]
 
-sublist_length = len(wordlist)//60
+sublist_length = len(wordlist) // 60
 
 if sublist_length < 1:
     graber = Sender(words_list=wordlist, task_id=task_id)
@@ -49,11 +47,13 @@ if sublist_length < 1:
     session.commit()
     print('[!} Search finished!')
 else:
-    lists = [wordlist[x:x+sublist_length] for x in range(0, len(wordlist), sublist_length)]
+    lists = [wordlist[x:x + sublist_length] for x in range(0, len(wordlist), sublist_length)]
+
 
     def do_work(key_words):
         _graber = Sender(words_list=key_words, task_id=task_id)
         _graber.process_list()
+
 
     for i in range(0, 10, 1):
         x = Thread(target=do_work, args=(lists[i],))
